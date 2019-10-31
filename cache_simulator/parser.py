@@ -1,5 +1,6 @@
-
-
+import os
+import sys
+import math
 # Example trace file:
 
 #   EIP (07): 7c80976b 8b 84 88 10 0e 00 00 mov eax,[eax+ecx*4+0xe10]
@@ -14,8 +15,10 @@
 # srcM: 7ffdfe2c: data read address--if data being read is all 0s, ignore it (assume 4 bytes)
 # 901e8b00: read data--ignore
 
+#Function to parse the trace file
+def parseTraceFile( traceFile ):
 
-
+    return 0
 
 
 

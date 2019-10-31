@@ -2,20 +2,21 @@ import os
 import sys
 import math
 import argparse
+#from parser.py import parseTraceFile
 #Check for proper usage
 if len(sys.argv) != 11:
     print ("Usage: " + sys.argv[0] + " –f <trace file name> –s <cache size in KB> –b <block size> –a <associativity> –r <replacement policy>")
     sys.exit(1)
 
-parser = argparse.ArgumentParser()#setup the parser
+cmd_parser = argparse.ArgumentParser()#setup the parser
 #add the expected argument flags
-parser.add_argument('-f',type=str, action='store', help="The trace file to be parsed")
-parser.add_argument('-s', type=int, action='store',help="The size of the cache in KB")
-parser.add_argument('-b',type=int, action='store', help="Block size of the cache")
-parser.add_argument('-a', type=int, action='store', help="Associativity of the cache")
-parser.add_argument('-r', type=str, action='store', help="Replacement policy")
+cmd_parser.add_argument('-f',type=str, action='store', help="The trace file to be parsed")
+cmd_parser.add_argument('-s', type=int, action='store',help="The size of the cache in KB")
+cmd_parser.add_argument('-b',type=int, action='store', help="Block size of the cache")
+cmd_parser.add_argument('-a', type=int, action='store', help="Associativity of the cache")
+cmd_parser.add_argument('-r', type=str, action='store', help="Replacement policy")
 #the args should be in a dictionary containing the arguments
-args = parser.parse_args()
+args = cmd_parser.parse_args()
 
 #Check that the flag's and their values are correct
 if (args.s < 1) or (args.s > 8192):#size of cache flag
@@ -33,13 +34,16 @@ if not (args.r in replacements):
     print("Unkown replacement policy. Must be either RR or RND")
     sys.exit(1)
 
-
+#Print header
+print("Cache Simulator CS 3853 Spring 2019 - Group # 9")
+#Print command line
+print("Cmd Line: " + str(sys.argv[::1]))
 #Print out the input in the required format
 print("Trace File: " + args.f)
 print("Cache Size: " + str(args.s) + " KB")#TO-DO: make sure the input only has a number, not letters
 print("Block Size: " + str(args.b) + " bytes")
 print("Associativity: " + str(args.a))
-print("Policy: " + str(args.r))
+print("R-Policy: " + str(args.r))
 
 #Using the inputs above, calculate the values for the cache
 total_blocks = ((args.s * 1024)/ args.b) / 1024
@@ -57,10 +61,17 @@ print("Index size: " + str(index_size) + "bits, Total Indices: " + str(total_ind
 print("Overhead Memory Size: " + str(memory_overhead * 1024) + " bytes (or " + str(memory_overhead) + "KB)")
 print("Implementation Memory Size: " + str(memory_impl) + " bytes (or " + str(memory_impl/1024) +" KB)")
 
-#Execute the trace file parser program here and run it on the trace file given
-traceFile = str(args.f)
+#Execute the trace file cmd_
+#parser program here and run it on the trace file given
+#f = open(str(args.f), "r")
+#traceFile = f.readline()
+#for line in traceFile:
+#    print(line)#TEST - show the line
 
-#Print the results of the parser program
+    #parser function
+    
+#Print the results of the cmd_
+#parser program
 print("----- Results -----")
 print("Cache Hit Rate: " + "%")#TO-DO: Add cache hit rate result
 print("CPI: ")#TO-DO: Add cache CPI result
