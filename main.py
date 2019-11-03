@@ -81,8 +81,8 @@ print("Implementation Memory Size: " + str(memory_impl) + " bytes (or " + str(me
 #Function to parse the trace file
 f = open(args.f, "r")
 #Milestone 1 requires first 20 addresses and lengths to be printed
-addresses_list = []
-lengths_list = []
+addresses_list = [] #hex addresses
+lengths_list = [] #lengths of each read
 if not f:
     print("Error: the file '%s' was not found or could not be opened", args["f"])
     sys.exit(1)
@@ -103,8 +103,8 @@ for line in f:
         new_block = False
 
         #milestone 1 code
-        addresses_list.append(str(tokens[2]))
-        lengths_list.append(bytes_read)
+        addresses_list.append(str(tokens[2]))#get the raw hex address
+        lengths_list.append(bytes_read)#length of instruction
     else:
         w_address = hex(int(tokens[1], 16))
         r_address = hex(int(tokens[4], 16))
