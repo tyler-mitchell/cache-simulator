@@ -61,7 +61,7 @@ print("Index size: " + str(index_size) + "bits, Total Indices: " + str(total_ind
 print("Overhead Memory Size: " + str(memory_overhead * 1024) + " bytes (or " + str(memory_overhead) + "KB)")
 print("Implementation Memory Size: " + str(memory_impl) + " bytes (or " + str(memory_impl/1024) +" KB)")
 
-#Execute the trace file cmd_
+#Execute the trace file parser
 #parser program here and run it on the trace file given
 
 # Example trace file:
@@ -80,7 +80,9 @@ print("Implementation Memory Size: " + str(memory_impl) + " bytes (or " + str(me
 
 #Function to parse the trace file
 f = open(args.f, "r")
-
+#Milestone 1 requires first 20 addresses and lengths to be printed
+addresses_list = []
+lengths_list = []
 if not f:
     print("Error: the file '%s' was not found or could not be opened", args["f"])
     sys.exit(1)
@@ -95,10 +97,14 @@ for line in f:
     # TODO:
     #   pad hex with zero(s)
     if new_block:
-        bytes_read = int(tokens[1][1:3])
+        bytes_read = int(tokens[1][1:3])#element2(length), numbers 2 and 3
         i_address = int(tokens[2], 16)
         print("Address: 0x%s length=%d byte(s)." % (tokens[2], bytes_read), end=' ')
         new_block = False
+
+        #milestone 1 code
+        addresses_list.append(str(tokens[2]))
+        lengths_list.append(bytes_read)
     else:
         w_address = hex(int(tokens[1], 16))
         r_address = hex(int(tokens[4], 16))
@@ -108,15 +114,12 @@ for line in f:
         rw_msg = "%s %s" %( w_msg , r_msg)
     
         print(rw_msg)
-        
-        
-   
-        
-    
-        
-    
+
 #Print the results of the cmd_
 #parser program
-# print("----- Results -----")
-# print("Cache Hit Rate: " + "%")#TO-DO: Add cache hit rate result
-# print("CPI: ")#TO-DO: Add cache CPI result 
+print("----- Results -----")
+print("Cache Hit Rate: " + "%")#TODO: Add cache hit rate result
+print("CPI: ")#TODO: Add cache CPI result 
+#Milestone 1 requirement: Print the first 20 lines of addresses and lengths
+for i in range(20):
+    print("0x" + str(addresses_list[i]) + ": (" + str(lengths_list[i]) + ")")
