@@ -99,7 +99,7 @@ for line in f:
     if new_block:
         bytes_read = int(tokens[1][1:3])#element2(length), numbers 2 and 3
         i_address = int(tokens[2], 16)
-        print("Address: 0x%s length=%d byte(s)." % (tokens[2], bytes_read), end=' ')
+        #print("Address: 0x%s length=%d byte(s)." % (tokens[2], bytes_read), end=' ')
         new_block = False
 
         #milestone 1 code
@@ -113,7 +113,7 @@ for line in f:
         r_msg =  "Data read at %s, length = 4 bytes" % (r_address) if int(r_address, 16) else "No data reads."
         rw_msg = "%s %s" %( w_msg , r_msg)
     
-        print(rw_msg)
+        #print(rw_msg)
 
 #Print the results of the cmd_
 #parser program
