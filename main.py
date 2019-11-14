@@ -7,6 +7,12 @@ import argparse
 if len(sys.argv) != 11:
     print ("Usage: " + sys.argv[0] + " –f <trace file name> –s <cache size in KB> –b <block size> –a <associativity> –r <replacement policy>")
     sys.exit(1)
+#Block class
+class Block:
+    def __init__(self, valid, tag ,replace):
+        self.tag = tag
+        self.valid = valid
+        self.replace = replace
 
 cmd_parser = argparse.ArgumentParser()#setup the parser
 #add the expected argument flags
@@ -115,11 +121,45 @@ for line in f:
     
         #print(rw_msg)
 
-#Print the results of the cmd_
+#Simulate the cache
+
+#First build the 2D array to represent the cache
+indices = int(total_indices)
+assoc = int(args.a)
+#cache_list = [[Block(0,"0",0) for j in range(assoc)] for i in range(indices)]
+cache_list = []
+block_list = []
+for row in range(indices):
+    #create a list of Block objects
+    block_list = []
+    for col in range(assoc):
+        block_list.append(Block(0,"0",0))
+        #print(str(block_list))
+    cache_list.append(block_list)
+print(str(cache_list))
+print("Rows " + str(indices))
+print("Blocks per row " + str(assoc))
+#test to see if the cache works
+#cache_list[30][0].valid = 1
+#cache_list[30][0].tag = "7ffcdb"
+#cache_list[30][0].replace = 987654321
+cache_list[0][1].valid = 1
+cache_list[30][1].tag = "Hello World!!!"
+
+count = 0
+for row in cache_list:
+    for column in row:
+        print("Row #" + str(count) + ", valid bit:" + str(column.valid))
+        print("Row #" + str(count) + ", tag:" + str(column.tag))
+        print("Row #" + str(count) + ", replace value:" + str(column.replace))
+    count = count + 1 #Keep track of the row, 0 indexed
+
+
+#Print the results
 #parser program
 print("----- Results -----")
 print("Cache Hit Rate: " + "%")#TODO: Add cache hit rate result
 print("CPI: ")#TODO: Add cache CPI result 
 #Milestone 1 requirement: Print the first 20 lines of addresses and lengths
-for i in range(20):
-    print("0x" + str(addresses_list[i]) + ": (" + str(lengths_list[i]) + ")")
+#for i in range(20):
+#    print("0x" + str(addresses_list[i]) + ": (" + str(lengths_list[i]) + ")")
