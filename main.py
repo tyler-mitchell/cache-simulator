@@ -67,60 +67,6 @@ print("Index size: " + str(index_size) + "bits, Total Indices: " + str(total_ind
 print("Overhead Memory Size: " + str(memory_overhead * 1024) + " bytes (or " + str(memory_overhead) + "KB)")
 print("Implementation Memory Size: " + str(memory_impl) + " bytes (or " + str(memory_impl/1024) +" KB)")
 
-#Execute the trace file parser
-#parser program here and run it on the trace file given
-
-# Example trace file:
-
-#   EIP (07): 7c80976b 8b 84 88 10 0e 00 00 mov eax,[eax+ecx*4+0xe10]
-#   dstM: 7ffdf034 00000000    srcM: 7ffdfe2c 901e8b00
-
-# EIP: (Extended Instruction Pointer): identifies the memory that is read containing the instruction.
-# 07: the number of bytes read--always a 2 digit number 
-# 7c80976b: numeric address containing the instruction.
-# 8b 84 88 10 0e 00 00: machine code (data) don't parse data
-# dstM: 7ffdf034: data write address--if data being read is all 0s, ignore it (assume 4 bytes)
-# 00000000: write data--ignore
-# srcM: 7ffdfe2c: data read address--if data being read is all 0s, ignore it (assume 4 bytes)
-# 901e8b00: read data--ignore
-
-#Function to parse the trace file
-f = open(args.f, "r")
-#Milestone 1 requires first 20 addresses and lengths to be printed
-addresses_list = [] #hex addresses
-lengths_list = [] #lengths of each read
-if not f:
-    print("Error: the file '%s' was not found or could not be opened", args["f"])
-    sys.exit(1)
-
-new_block = True
-for line in f:
-    if line == '\n':
-        new_block = True
-        continue
-    
-    tokens = line.split()
-    # TODO:
-    #   pad hex with zero(s)
-    if new_block:
-        bytes_read = int(tokens[1][1:3])#element2(length), numbers 2 and 3
-        i_address = int(tokens[2], 16)
-        #print("Address: 0x%s length=%d byte(s)." % (tokens[2], bytes_read), end=' ')
-        new_block = False
-
-        #milestone 1 code
-        addresses_list.append(str(tokens[2]))#get the raw hex address
-        lengths_list.append(bytes_read)#length of instruction
-    else:
-        w_address = hex(int(tokens[1], 16))
-        r_address = hex(int(tokens[4], 16))
-        
-        w_msg =  "Data write at %s, length=4 bytes" % (w_address) if int(w_address, 16) else "No data writes."
-        r_msg =  "Data read at %s, length = 4 bytes" % (r_address) if int(r_address, 16) else "No data reads."
-        rw_msg = "%s %s" %( w_msg , r_msg)
-    
-        #print(rw_msg)
-
 #Simulate the cache
 
 #First build the 2D array to represent the cache
@@ -135,16 +81,61 @@ for row in range(indices):
     for col in range(assoc):
         block_list.append(Block(0,"0",0))
         #print(str(block_list))
-    cache_list.append(block_list)
-print(str(cache_list))
-print("Rows " + str(indices))
-print("Blocks per row " + str(assoc))
-#test to see if the cache works
-#cache_list[30][0].valid = 1
-#cache_list[30][0].tag = "7ffcdb"
-#cache_list[30][0].replace = 987654321
-cache_list[0][1].valid = 1
-cache_list[30][1].tag = "Hello World!!!"
+    cache_list.append(block_list)#add this "set" to the index
+print(str(cache_list))#test to see if cache was built correctly
+
+#parse the trace file
+f = open(args.f, "r")
+#Milestone 1 requires first 20 addresses and lengths to be printed
+#addresses_list = [] #hex addresses
+#lengths_list = [] #lengths of each read
+if not f:
+    print("Error: the file '%s' was not found or could not be opened", args["f"])
+    sys.exit(1)
+
+new_block = True
+for line in f:
+    if line == '\n':
+        new_block = True
+        continue
+    
+    tokens = line.split()
+    # TODO:
+    #   pad hex with zero(s)
+
+    #Read the first line and retrieve the length and address
+    if new_block:
+        bytes_read = int(tokens[1][1:3])#element2(length), numbers 2 and 3
+        i_address = int(tokens[2], 16)
+        #print("Address: 0x%s length=%d byte(s)." % (tokens[2], bytes_read), end=' ')
+        new_block = False
+        #This converts the address from hex to binary. This allows us to get the index/tag/offset
+        address_binary = bin(int(i_address, 16))[2:].zfill(32)
+        
+        #insert the adress into the cache
+        
+        
+        #milestone 1 code
+        #addresses_list.append(str(tokens[2]))#get the raw hex address
+        #lengths_list.append(bytes_read)#length of instruction
+    #Read the second line
+    else:
+        w_address = hex(int(tokens[1], 16))
+        r_address = hex(int(tokens[4], 16))
+        
+        w_msg =  "Data write at %s, length=4 bytes" % (w_address) if int(w_address, 16) else "No data writes."
+        r_msg =  "Data read at %s, length = 4 bytes" % (r_address) if int(r_address, 16) else "No data reads."
+        rw_msg = "%s %s" %( w_msg , r_msg)
+        #TODO
+        #Check if the data in the src/dst is 0.
+        #If it is, ignore it. 
+        #Otherwise increase the CPI count for this instruction by 2 for a read and 2 for a write
+        #print(rw_msg)
+
+
+#print(str(cache_list))
+#print("Rows " + str(indices))
+#print("Blocks per row " + str(assoc))
 
 count = 0
 for row in cache_list:
