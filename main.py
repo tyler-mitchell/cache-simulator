@@ -80,9 +80,9 @@ print("R-Policy: " + str(args.r))
 
 #Using the inputs above, calculate the values for the cache
 total_blocks = ((args.s * 1024)/ args.b) / 1024
-index_size = math.log((total_blocks*1024/ args.a), 2)
+index_size = int(math.log((total_blocks*1024/ args.a), 2))
 offset_size = math.log(args.b, 2)
-tag_size = 32 - index_size - offset_size
+tag_size = int(32 - index_size - offset_size)
 total_indices = (2 ** index_size) / 1024
 memory_overhead = ((tag_size + 1) * args.a * total_indices) / 8 #puts it in KB
 memory_impl = (memory_overhead * 1024) + (args.s * 1024)
@@ -97,11 +97,13 @@ print("Implementation Memory Size: " + str(memory_impl) + " bytes (or " + str(me
 #Simulate the cache
 
 #First build the 2D array to represent the cache
-indices = int(total_indices)
+indices = int(total_indices * 1024) #Value is in K?, convert
 assoc = int(args.a)
 #cache_list = [[Block(0,"0",0) for j in range(assoc)] for i in range(indices)]
 cache_list = []
 block_list = []
+#print("Total rows in cache:" + str(indices))
+#print("Blocks per row:" + str(assoc))
 for row in range(indices):
     #create a list of Block objects
     block_list = []
@@ -109,7 +111,7 @@ for row in range(indices):
         block_list.append(Block(0,"0",0))
         #print(str(block_list))
     cache_list.append(block_list)#add this "set" to the index
-print(str(cache_list))#test to see if cache was built correctly
+#print(str(cache_list))#test to see if cache was built correctly
 
 #parse the trace file
 f = open(args.f, "r")
@@ -138,13 +140,18 @@ for line in f:
         #print("Address: 0x%s length=%d byte(s)." % (tokens[2], bytes_read), end=' ')
         new_block = False
         #get the tag, the index and the block offset
-        print("Address to be calculated:" + hex_address)
+        #print("Address to be calculated:" + hex_address)
         address_space = calculate_address_space(hex_address, int(tag_size), int(index_size), int(offset_size))#all sizes are in bits
-        print(address_space)#TEST remove later
+        #print(address_space)#TEST remove later
         
         #TODO 
         # insert the adress into the cache
-        
+        #TEST insert into first block only
+        print("Data inserted into cache block")
+        print("Index:" + str(address_space[1]))
+        print("Tag:" + str(address_space[0]))
+        #cache_list[int(address_space[1])][0].tag = str(address_space[0])
+
         
         #milestone 1 code
         #addresses_list.append(str(tokens[2]))#get the raw hex address
@@ -171,9 +178,7 @@ for line in f:
 count = 0
 for row in cache_list:
     for column in row:
-        print("Row #" + str(count) + ", valid bit:" + str(column.valid))
-        print("Row #" + str(count) + ", tag:" + str(column.tag))
-        print("Row #" + str(count) + ", replace value:" + str(column.replace))
+        print("Row #" + str(count) + ", valid bit:" + str(column.valid) + ", tag:" + str(column.tag) + ", replace value:" + str(column.replace))
     count = count + 1 #Keep track of the row, 0 indexed
 
 
