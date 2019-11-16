@@ -205,6 +205,9 @@ for line in f:
                     #TODO write replacement algorithm code
                     #for now replace the first block
                     cache_list[cache_index][0].tag == str(address_space[0])
+                    #also add a miss for replacing a block
+                    cache_miss_count += 1
+                    cache_miss = True #not really necessary but might as well set the flag
 
 
     #Read the second line
