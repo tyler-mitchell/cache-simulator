@@ -137,6 +137,7 @@ for line in f:
         bytes_read = int(tokens[1][1:3])#element2(length), numbers 2 and 3
         i_address = int(tokens[2], 16)
         hex_address = str(tokens[2])
+        block_size = int(args.b)
         #print("Address: 0x%s length=%d byte(s)." % (tokens[2], bytes_read), end=' ')
         new_block = False
 
@@ -145,47 +146,65 @@ for line in f:
         #========================================
         #get the tag, the index and the block offset
         address_space = calculate_address_space(hex_address, int(tag_size), int(index_size), int(offset_size))#all sizes are in bits
-        
+        print("==============================")
         #TODO 
         # insert the adress into the cache
         print("Data to be inserted into cache block")
         print("Index:" + str(address_space[1]))
-        print("Tag:" + str(address_space[0]))
-        #block_index = 0#TEST only choose the first block
-        cache_miss = False#cache miss on valid == 0 or tag != block tag
-        tag_found = False
-        total_lines += 1
-
-        #find the matching tag in this set of blocks
-        for block_index in cache_list[int(address_space[1])]:
-            print("Searching blocks in set# " + str(address_space[1]))
-            #if(cache_list[int(address_space[1])][block_index].tag == str(address_space[0])):
-            if(block_index.tag == str(address_space[0])):
-                #cache hit!
-                tag_found = True#Tag was found! no need to replace or write to cache
-                print("Tag found")
-                break
-        #TODO write to multiple indexes if needed
         
-        #Handle for no tag found
-        if(tag_found == False):#Find a block to replace
-            #find the next empty block
-            print("No tag, searching for empty block")
-            for block_index in cache_list[int(address_space[1])]:
-                if(block_index.valid == 0):
-                    print("Empty block found")
-                    block_index.valid = 1#set the valid bit if it's 0
-                    cache_miss = True#trigger cache miss
-                    cache_miss_count += 1
-                    #write to the block
-                    block_index.tag = str(address_space[0])
-                    break #exit the loop
-            if(cache_miss == False):#No empty block was found
-                print("ERROR no empty block found. Using -r")
-                #Use replacement algorithm to find a block
-                #TODO write replacement algorithm code
-                #for now replace the first block
-                cache_list[int(address_space[1])][0].tag == str(address_space[0])
+        
+        total_lines += 1
+        
+        #get the number of indexes to read
+        #offset position + bytes to read / block size = blocks to read, round down
+        #if offset position + bytes to read % block size > 0 add 1 block to read
+        offset = address_space[2]
+        index_rollover = int((int(offset) + bytes_read) / block_size)
+        if((int(offset) + bytes_read % block_size) != 0):#if there is a remainder
+            index_rollover += 1# add an index to be read
+        print("Number of indeces to read: " + str(index_rollover))
+        print("Tag:" + str(address_space[0]))
+
+
+        #loop through the number of indeces this address will touch
+        for i in range(0,index_rollover):
+            
+            #Flags for each index
+            cache_miss = False#cache miss on valid == 0 or tag != block tag
+            tag_found = False
+            
+            
+            cache_index = i + int(address_space[1])
+            print("In row #: " + str(cache_index))
+            #find the matching tag in this set of blocks
+            for block_index in cache_list[cache_index]:
+                print("Searching blocks in set# " + str(cache_index))
+                #if(cache_list[int(address_space[1])][block_index].tag == str(address_space[0])):
+                if(block_index.tag == str(address_space[0])):
+                    #cache hit!
+                    tag_found = True#Tag was found! no need to replace or write to cache
+                    print("Tag found")
+                    break
+            
+            #Handle for no tag found
+            if(tag_found == False):#Find a block to replace
+                #find the next empty block
+                print("No tag, searching for empty block")
+                for block_index in cache_list[cache_index]:
+                    if(block_index.valid == 0):
+                        print("Empty block found")
+                        block_index.valid = 1#set the valid bit if it's 0
+                        cache_miss = True#trigger cache miss
+                        cache_miss_count += 1
+                        #write to the block
+                        block_index.tag = str(address_space[0])
+                        break #exit the loop
+                if(cache_miss == False):#No empty block was found
+                    print("ERROR no empty block found. Using -r")
+                    #Use replacement algorithm to find a block
+                    #TODO write replacement algorithm code
+                    #for now replace the first block
+                    cache_list[cache_index][0].tag == str(address_space[0])
 
 
     #Read the second line
