@@ -67,6 +67,9 @@ if not (args.r in replacements):
     print("Unkown replacement policy. Must be either RR or RND")
     sys.exit(1)
 
+#==============================
+#HEADER AND CACHE CALCULATIONS
+#==============================
 #Print header
 print("Cache Simulator CS 3853 Spring 2019 - Group # 9")
 #Print command line
@@ -94,12 +97,12 @@ print("Index size: " + str(index_size) + "bits, Total Indices: " + str(total_ind
 print("Overhead Memory Size: " + str(memory_overhead * 1024) + " bytes (or " + str(memory_overhead) + "KB)")
 print("Implementation Memory Size: " + str(memory_impl) + " bytes (or " + str(memory_impl/1024) +" KB)")
 
-#Simulate the cache
-
+#==============================
+#SIMULATE THE CACHE
+#==============================
 #First build the 2D array to represent the cache
-indices = int(total_indices * 1024) #Value is in K?, convert
-assoc = int(args.a)
-#cache_list = [[Block(0,"0",0) for j in range(assoc)] for i in range(indices)]
+indices = int(total_indices * 1024) #get the number of rows. Value is in K, convert with 1024
+assoc = int(args.a)#block associativity
 cache_list = []
 block_list = []
 #print("Total rows in cache:" + str(indices))
@@ -109,19 +112,18 @@ for row in range(indices):
     block_list = []
     for col in range(assoc):
         block_list.append(Block(0,"0",0))
-        #print(str(block_list))
+        #print(str(block_list)) #show that the block objects were made correctly
     cache_list.append(block_list)#add this "set" to the index
 #print(str(cache_list))#test to see if cache was built correctly
 
 #parse the trace file
 f = open(args.f, "r")
-#Milestone 1 requires first 20 addresses and lengths to be printed
-#addresses_list = [] #hex addresses
-#lengths_list = [] #lengths of each read
 if not f:
     print("Error: the file '%s' was not found or could not be opened", args["f"])
     sys.exit(1)
 
+cache_miss_count = 0#cache miss/total lines = cache miss rate. 1 - miss rate = hit rate
+total_lines = 0#1 per write to the cache
 new_block = True
 for line in f:
     if line == '\n':
@@ -129,8 +131,6 @@ for line in f:
         continue
     
     tokens = line.split()
-    # TODO:
-    #   pad hex with zero(s)
 
     #Read the first line and retrieve the length and address
     if new_block:
@@ -139,23 +139,40 @@ for line in f:
         hex_address = str(tokens[2])
         #print("Address: 0x%s length=%d byte(s)." % (tokens[2], bytes_read), end=' ')
         new_block = False
+
+        #========================================
+        #WRITE TO CACHE / GET CPI / GET MISS RATE
+        #========================================
         #get the tag, the index and the block offset
-        #print("Address to be calculated:" + hex_address)
         address_space = calculate_address_space(hex_address, int(tag_size), int(index_size), int(offset_size))#all sizes are in bits
-        #print(address_space)#TEST remove later
         
         #TODO 
         # insert the adress into the cache
-        #TEST insert into first block only
         print("Data inserted into cache block")
         print("Index:" + str(address_space[1]))
         print("Tag:" + str(address_space[0]))
-        #cache_list[int(address_space[1])][0].tag = str(address_space[0])
-
+        block = 0#TEST only choose the first block
+        cache_miss = False#cache miss on valid == 0 or tag != block tag
+        total_lines += 1
+        if(cache_list[int(address_space[1])][block].valid == 0):
+            cache_list[int(address_space[1])][block].valid = 1#set the valid bit if it's 0
+            cache_miss = True#trigger cache miss
+            cache_miss_count += 1
+            #write to the block(s)
+            #TODO write to multiple indexes if needed
+            cache_list[int(address_space[1])][block].tag = str(address_space[0])
+            print("Valid bit was 0")#TEST remove
         
-        #milestone 1 code
-        #addresses_list.append(str(tokens[2]))#get the raw hex address
-        #lengths_list.append(bytes_read)#length of instruction
+        #If the valid bit was set and the tags don't match
+        if(cache_miss == False) and (cache_list[int(address_space[1])][block].tag != str(address_space[0])):
+            cache_miss = True#trigger cache miss
+            cache_miss_count += 1
+            #Write to the block(s) the new tag
+            #TODO write to multiple indexes if needed
+            cache_list[int(address_space[1])][block].tag = str(address_space[0])
+            print("Tag's don't match")#TEST remove
+            
+
     #Read the second line
     else:
         w_address = hex(int(tokens[1], 16))
@@ -181,11 +198,13 @@ for row in cache_list:
         print("Row #" + str(count) + ", valid bit:" + str(column.valid) + ", tag:" + str(column.tag) + ", replace value:" + str(column.replace))
     count = count + 1 #Keep track of the row, 0 indexed
 
-
+print("Cache misses:" + str(cache_miss_count))
+print("Lines read:" + str(total_lines))
+miss_rate = (1 - float(cache_miss_count/total_lines)) * 100
 #Print the results
 #parser program
 print("----- Results -----")
-print("Cache Hit Rate: " + "%")#TODO: Add cache hit rate result
+print("Cache Hit Rate: " + "{:.2f}".format(miss_rate) +"%")#TODO: Add cache hit rate result
 print("CPI: ")#TODO: Add cache CPI result 
 #Milestone 1 requirement: Print the first 20 lines of addresses and lengths
 #for i in range(20):
