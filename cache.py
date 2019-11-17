@@ -45,24 +45,30 @@ class Cache:
         # create a list of all the items
 
         result = {'tag': tag, 'index': index, 'block_offset': block_offset}
-        print(result)
         return result
 
     def calculate_miss_rate(self):
         # cache miss/total lines = cache miss rate.
-        # 1 - miss rate = hit rate
         miss_rate = float(self.cache_miss_count/self.total_lines)
+        # 1 - miss rate = hit rate
         self.hit_rate = (1 - miss_rate) * 100
 
-    def get_block(self, address_space, block):
-        block = cache_list[address_space['index']][block]
+    def get_cache_block(self, address_space, block):
+        block = self.cache_list[address_space['index']][block]
         return block
 
+
     def simulate_cache(self):
+        tag_size = self.tag_size
+        index_size = self.index_size
+        trace_file = self.trace_file
+        cache_list = self.cache_list
+        
+        
         self.build_cache()
-        # 1 per write to the cache
+    
         new_block = True
-        for line in self.trace_file:
+        for line in trace_file:
             if line == '\n':
                 new_block = True
                 continue
@@ -79,35 +85,38 @@ class Cache:
                 # WRITE TO CACHE / GET CPI / GET MISS RATE
                 # ========================================
                 # get the tag, the index and the block offset
-                address_space = self.calculate_address_space(hex_address, int(self.tag_size), int(
-                    self.index_size), int(self.offset_size))  # all sizes are in bits
+                address_space = self.calculate_address_space(hex_address, int(tag_size), int(
+                    index_size), int(self.offset_size))  # all sizes are in bits
 
                 # TODO
                 # insert the adress into the cache
                 print("Data inserted into cache block")
                 print("Index:" + str(address_space['index']))
                 print("Tag:" + str(address_space['tag']))
+                
                 block = 0  # TEST only choose the first block
+                cache_block = self.get_cache_block(address_space, block)
+                
                 cache_miss = False  # cache miss on valid == 0 or tag != block tag
                 self.total_lines += 1
-                if(self.cache_list[address_space['index']][block].valid == 0):
+                if(cache_block.valid == 0):
                     # set the valid bit if it's 0
-                    self.cache_list[address_space['index']][block].valid = 1
+                    cache_block.valid = 1
                     cache_miss = True  # trigger cache miss
                     self.cache_miss_count += 1
                     # write to the block(s)
                     # TODO write to multiple indexes if needed
-                    self.cache_list[address_space['index']][block].tag = str(
+                    cache_block.tag = str(
                         address_space['tag'])
                     print("Valid bit was 0")  # TEST remove
 
                 # If the valid bit was set and the tags don't match
-                if(cache_miss == False) and (self.cache_list[address_space['index']][block].tag != str(address_space['tag'])):
+                if(cache_miss == False) and (cache_block.tag != str(address_space['tag'])):
                     cache_miss = True  # trigger cache miss
                     self.cache_miss_count += 1
                     # Write to the block(s) the new tag
                     # TODO write to multiple indexes if needed
-                    cache_list[address_space['index']][block].tag = str(
+                    cache_block.tag = str(
                         address_space[0])
                     print("Tag's don't match")  # TEST remove
 
@@ -129,10 +138,10 @@ class Cache:
         self.calculate_miss_rate()
 
     def display_cache(self):
-        for count, row in enumerate(self.cache_list):
-            for column in row:
-                print("Row #" + str(count) + ", valid bit:" + str(column.valid) +
-                      ", tag:" + str(column.tag) + ", replace value:" + str(column.replace))
+        # for count, row in enumerate(self.cache_list):
+        #     for column in row:
+        #         print("Row #" + str(count) + ", valid bit:" + str(column.valid) +
+        #               ", tag:" + str(column.tag) + ", replace value:" + str(column.replace))
 
         print("Cache misses:" + str(self.cache_miss_count))
         print("Lines read:" + str(self.total_lines))
