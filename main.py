@@ -3,12 +3,14 @@ import sys
 import math
 import argparse
 import helpers
+from block import Block
+from cache import Cache
 '''
 Cache Capacity = (Block Size in Bytes) * (Blocks per Set) * (Number of Sets)
 Index Bits = LOG2(Blocks per Set)
 Block Offset Bits = LOG2(Block Size in Bytes)
 Tag Bits = (Address Bits) - (Index Bits) - (Block Offset Bits)
-# Sets = Cache Size / (Block Size * Associativity)
+Sets = Cache Size / (Block Size * Associativity)
 '''
 
 
@@ -35,13 +37,6 @@ def calculate_address_space(address, tag_bits, index_bits, block_offset_bits):
     return result
 
 
-class Block:
-    def __init__(self, valid, tag, replace):
-        self.tag = tag
-        self.valid = valid
-        self.replace = replace
-
-
 args = helpers.parse_arguments()
 helpers.check_arguments(args)
 helpers.display_input(args)
@@ -50,9 +45,9 @@ cache_size = args.s
 block_size = args.b
 associativity = args.a
 replacement_policy = args.r
+file_name = args.f
 
 # Calculate cache values
-
 total_blocks = ((cache_size * 1024) / block_size) / 1024
 index_size = int(math.log((total_blocks*1024 / associativity), 2))
 offset_size = math.log(block_size, 2)
@@ -75,8 +70,8 @@ indices = int(total_indices * 1024)
 # block associativity
 cache_list = []
 block_list = []
-#print("Total rows in cache:" + str(indices))
-#print("Blocks per row:" + str(assoc))
+
+
 for row in range(indices):
     # create a list of Block objects
     block_list = []
@@ -87,8 +82,8 @@ for row in range(indices):
 # print(str(cache_list))#test to see if cache was built correctly
 
 # parse the trace file
-f = open(args.f, "r")
-if not f:
+trace_file = open(file_name, "r")
+if not trace_file:
     print(
         "Error: the file '%s' was not found or could not be opened", args["f"])
     sys.exit(1)
@@ -96,7 +91,7 @@ if not f:
 cache_miss_count = 0  # cache miss/total lines = cache miss rate. 1 - miss rate = hit rate
 total_lines = 0  # 1 per write to the cache
 new_block = True
-for line in f:
+for line in trace_file:
     if line == '\n':
         new_block = True
         continue
