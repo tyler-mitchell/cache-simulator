@@ -92,7 +92,7 @@ class Cache:
                 # insert the adress into the cache
                 print("Data inserted into cache block")
                 print("Index:" + str(address_space['index']))
-                print("Tag:" + str(address_space['tag']))
+                print("Tag:" + address_space['tag'])
                 
                 block = 0  # TEST only choose the first block
                 cache_block = self.get_cache_block(address_space, block)
@@ -106,18 +106,16 @@ class Cache:
                     self.cache_miss_count += 1
                     # write to the block(s)
                     # TODO write to multiple indexes if needed
-                    cache_block.tag = str(
-                        address_space['tag'])
+                    cache_block.tag = address_space['tag']
                     print("Valid bit was 0")  # TEST remove
 
                 # If the valid bit was set and the tags don't match
-                if(cache_miss == False) and (cache_block.tag != str(address_space['tag'])):
+                if(cache_miss == False) and (cache_block.tag != address_space['tag']):
                     cache_miss = True  # trigger cache miss
                     self.cache_miss_count += 1
                     # Write to the block(s) the new tag
                     # TODO write to multiple indexes if needed
-                    cache_block.tag = str(
-                        address_space[0])
+                    cache_block.tag = address_space['tag']
                     print("Tag's don't match")  # TEST remove
 
             # Read the second line
