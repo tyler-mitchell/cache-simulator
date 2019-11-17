@@ -4,7 +4,7 @@ from block import Block
 class Cache:
     cache_list = []
     cache_miss_count = 0
-    miss_rate = 0
+    hit_rate = 0
     total_lines = 0
 
     def __init__(self, trace_file, block_size, tag_size, associativity, index_size, offset_size, total_indices):
@@ -48,9 +48,10 @@ class Cache:
         print(result)
         return result
 
-    def calculate_miss_rate(self):
-        # cache miss/total lines = cache miss rate. 1 - miss rate = hit rate
-        self.miss_rate = (
+    def calculate_hit_rate(self):
+        # cache miss/total lines = cache miss rate. 
+        # 1 - miss rate = hit rate
+        self.hit_rate = (
             1 - float(self.cache_miss_count/self.total_lines)) * 100
 
     def get_block(self, address_space, block):
@@ -125,7 +126,7 @@ class Cache:
                 # Otherwise increase the CPI count for this instruction by 2 for a read and 2 for a write
                 # print(rw_msg)
 
-        self.calculate_miss_rate()
+        self.calculate_hit_rate()
 
     def display_cache(self):
         for count, row in enumerate(self.cache_list):
@@ -137,5 +138,5 @@ class Cache:
         print("Lines read:" + str(self.total_lines))
         print("----- Results -----")
         # TODO: Add cache hit rate result
-        print("Cache Hit Rate: " + "{:.2f}".format(self.miss_rate) + "%")
+        print("Cache Hit Rate: " + "{:.2f}".format(self.hit_rate) + "%")
         print("CPI: ")  # TODO: Add cache CPI result
