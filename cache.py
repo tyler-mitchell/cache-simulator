@@ -3,7 +3,6 @@ from block import Block
 
 class Cache:
     cache_list = []
-    block_list = []
     cache_miss_count = 0
     miss_rate = 0
     total_lines = 0
@@ -16,21 +15,17 @@ class Cache:
         self.index_size = index_size
         self.tag_size = tag_size
         self.offset_size = offset_size
-        
-
 
     # Build the 2D array to represent the cache
     # Get the number of rows. Value is in K, convert with 1024
+
     def build_cache(self):
         for row in range(self.indices):
             # create a list of Block objects
-            block_list = []
+            cache_set = []
             for col in range(self.associativity):
-                block_list.append(Block(0, "0", 0))
-                # print(str(block_list)) #show that the block objects were made correctly
-            self.cache_list.append(block_list)  # add this "set" to the index
-
-        # print(str(cache_list))#test to see if cache was built correctly
+                cache_set.append(Block(valid=0, tag="0", replace=0))
+            self.cache_list.append(cache_set)  # add this "set" to the index
 
     def calculate_address_space(self, address, tag_bits, index_bits, block_offset_bits):
         # convert hex string to binary string
@@ -40,18 +35,17 @@ class Cache:
         index_bin = address_binary[(
             32 - block_offset_bits - index_bits):(32 - block_offset_bits)]
         tag_bin = address_binary[:(tag_bits)]
-        #print("Tag in binary: " + tag_bin)
-        #print("Index in binary: " + index_bin)
-        #print("Block Offset in binary: " + block_offset_bin)
 
         # Block offset as an int
         block_offset = str(int(block_offset_bin, 2))
         # index as an int
-        index = str(int(index_bin, 2))
+        index = int(index_bin, 2)
         # tag needs to be hex string
         tag = str(hex(int(tag_bin, 2)))
         # create a list of all the items
-        result = [tag, index, block_offset]
+
+        result = {'tag': tag, 'index': index, 'block_offset': block_offset}
+        print(result)
         return result
 
     def calculate_miss_rate(self):
@@ -59,7 +53,10 @@ class Cache:
         self.miss_rate = (
             1 - float(self.cache_miss_count/self.total_lines)) * 100
 
- 
+    def get_block(self, address_space, block):
+        block = cache_list[address_space['index']][block]
+        return block
+
     def simulate_cache(self):
         self.build_cache()
         # 1 per write to the cache
@@ -87,29 +84,29 @@ class Cache:
                 # TODO
                 # insert the adress into the cache
                 print("Data inserted into cache block")
-                print("Index:" + str(address_space[1]))
-                print("Tag:" + str(address_space[0]))
+                print("Index:" + str(address_space['index']))
+                print("Tag:" + str(address_space['tag']))
                 block = 0  # TEST only choose the first block
                 cache_miss = False  # cache miss on valid == 0 or tag != block tag
                 self.total_lines += 1
-                if(self.cache_list[int(address_space[1])][block].valid == 0):
+                if(self.cache_list[address_space['index']][block].valid == 0):
                     # set the valid bit if it's 0
-                    self.cache_list[int(address_space[1])][block].valid = 1
+                    self.cache_list[address_space['index']][block].valid = 1
                     cache_miss = True  # trigger cache miss
                     self.cache_miss_count += 1
                     # write to the block(s)
                     # TODO write to multiple indexes if needed
-                    self.cache_list[int(address_space[1])][block].tag = str(
-                        address_space[0])
+                    self.cache_list[address_space['index']][block].tag = str(
+                        address_space['tag'])
                     print("Valid bit was 0")  # TEST remove
 
                 # If the valid bit was set and the tags don't match
-                if(cache_miss == False) and (self.cache_list[int(address_space[1])][block].tag != str(address_space[0])):
+                if(cache_miss == False) and (self.cache_list[address_space['index']][block].tag != str(address_space['tag'])):
                     cache_miss = True  # trigger cache miss
                     self.cache_miss_count += 1
                     # Write to the block(s) the new tag
                     # TODO write to multiple indexes if needed
-                    cache_list[int(address_space[1])][block].tag = str(
+                    cache_list[address_space['index']][block].tag = str(
                         address_space[0])
                     print("Tag's don't match")  # TEST remove
 
