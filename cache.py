@@ -48,11 +48,11 @@ class Cache:
         print(result)
         return result
 
-    def calculate_hit_rate(self):
-        # cache miss/total lines = cache miss rate. 
+    def calculate_miss_rate(self):
+        # cache miss/total lines = cache miss rate.
         # 1 - miss rate = hit rate
-        self.hit_rate = (
-            1 - float(self.cache_miss_count/self.total_lines)) * 100
+        miss_rate = float(self.cache_miss_count/self.total_lines)
+        self.hit_rate = (1 - miss_rate) * 100
 
     def get_block(self, address_space, block):
         block = cache_list[address_space['index']][block]
@@ -126,7 +126,7 @@ class Cache:
                 # Otherwise increase the CPI count for this instruction by 2 for a read and 2 for a write
                 # print(rw_msg)
 
-        self.calculate_hit_rate()
+        self.calculate_miss_rate()
 
     def display_cache(self):
         for count, row in enumerate(self.cache_list):
