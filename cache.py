@@ -66,7 +66,7 @@ class Cache:
                 block = row.blocks[row.lastUsedIndex + 1]
                 row.lastUsedIndex += 1
         elif (self.replacement_policy == "RND"):
-            block = row.blocks[random.randint(0, associativity)]
+            block = row.blocks[random.randint(0, self.associativity)]
         elif (self.replacement_policy == "LRU"):
             block = getLRUBlock(row)
             addOneTimeToAll(row)

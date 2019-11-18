@@ -39,9 +39,9 @@ def check_arguments(args):
     if not (args.a in associativity):  # associativity flag
         print("Associativity out of range: 1, 2, 4, 8, 16")
         sys.exit(1)
-    replacements = ["RR", "RND"]
+    replacements = ["RR", "RND", "LRU"]
     if not (args.r in replacements):
-        print("Unkown replacement policy. Must be either RR or RND")
+        print("Unkown replacement policy. Must be RR, RND, or LRU")
         sys.exit(1)
 
 
