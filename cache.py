@@ -67,18 +67,18 @@ class Cache:
         elif (self.replacement_policy == "RND"):
             block = row[random.randint(0, associativity)]
         elif (self.replacement_policy == "LRU"):
-            block = getLRUBlockIndex(row)
+            block = getLRUBlock(row)
             addOneTimeToAll(row)
             block.timeSinceLastUse = 0
         return block
 
-    def getLRUBlockIndex(self, tag_set):
+    def getLRUBlock(self, tag_set):
         numLRU = 0
         blockLRU = 0
         for col in range(self.associativity):
             if (tag_set.blocks[col].timeSinceLastUse > numLRU):
                 numLRU = tag_set.blocks[col].timeSinceLastUse
-                blockLRU = col
+                blockLRU = tag_set.blocks[col]
         return blockLRU
 
     def addOneTimeToAll(self, tag_set):
@@ -89,8 +89,7 @@ class Cache:
         tag_size = self.tag_size
         index_size = self.index_size
         trace_file = self.trace_file
-        index_list = self.index_list
-        
+        index_list = self.index_list        
         
         self.build_cache()
     
