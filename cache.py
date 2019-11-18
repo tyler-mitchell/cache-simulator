@@ -23,23 +23,15 @@ class Cache:
     # Build the 2D array to represent the cache
     # Get the number of rows. Value is in K, convert with 1024
 
-    """def build_cache(self):
-        for row in range(self.indices):
-            tag_set = Row(blocks=[], lastUsedIndex=-1)
-            for col in range(self.associativity):
-                tag_set.blocks.append(Block(valid=0, tag="0", timeSinceLastUse=0))
-            self.index_list.append(tag_set)
-    """
     def build_cache(self):
         #Each index has a "set" of blocks
         for index in range(self.indices):
-            #create a list of Block objects
-            #This "block_list" represents the "set" in each index of the cache
-            block_list = []
+            #This row has a list of blocks that represents the "set" in each index of the cache
+            self.index_list.append(Row(blocks=[], lastUsedIndex=-1))
+            #print("Row #" + str(index))
             for block in range(self.associativity):
-                block_list.append(Block(0,"0",0))#add a block to this row
-                print("==" + str(block_list)) #show that the block objects were made correctly
-            self.index_list.append(block_list)#add this "set" to the index
+                self.index_list[index].blocks.append(Block(valid=0, tag="0", timeSinceLastUse=0)) #add a block to this row
+            #print("==" + str(len(self.index_list[index].blocks))) #show that the block objects were made correctly
 
     def calculate_address_space(self, address, tag_bits, index_bits, block_offset_bits):
         # convert hex string to binary string
@@ -51,11 +43,11 @@ class Cache:
         tag_bin = address_binary[:(tag_bits)]
 
         # Block offset as an int
-        block_offset = str(int(block_offset_bin, 2))
+        block_offset = int(block_offset_bin, 2)
         # index as an int
         index = int(index_bin, 2)
         # tag needs to be hex string
-        tag = str(hex(int(tag_bin, 2)))
+        tag = int(tag_bin, 2)
         # create a list of all the items
 
         result = {'tag': tag, 'index': index, 'block_offset': block_offset}
@@ -68,6 +60,13 @@ class Cache:
         self.hit_rate = (1 - miss_rate) * 100
 
     def get_cache_block(self, address_space):
+        # get row by index, get block by tag
+        for block in self.index_list[address_space['index']].blocks:
+            if block.tag == address_space['tag']:
+                return block
+        return None
+    
+    def get_replacement_block(self, address_space):
         row = self.index_list[address_space['index']]
         block = None
         if (self.replacement_policy == "RR"):
@@ -131,13 +130,14 @@ class Cache:
                 # insert the adress into the cache
                 print("Data inserted into cache block")
                 print("Index:" + str(address_space['index']))
-                print("Tag:" + address_space['tag'])
+                print("Tag:" + str(address_space['tag']))
                 
                 cache_block = self.get_cache_block(address_space)
                 
                 # check for cache hit
                 # if the valid bit wasn't set or the tags don't match
-                if(cache_block.valid == 0 or cache_block.tag != address_space['tag']): # cache miss
+                if(cache_block == None or cache_block.valid == 0 or cache_block.tag != address_space['tag']): # cache miss
+                    cache_block = self.get_replacement_block(address_space)
                     self.cache_miss_count += 1
                     if cache_block.tag != address_space['tag']:
                         print("Tag's don't match") # TEST remove
