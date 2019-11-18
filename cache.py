@@ -7,7 +7,8 @@ class Cache:
     index_list = []
     cache_miss_count = 0
     hit_rate = 0
-    total_lines = 0
+    total_cycles = 0
+    total_instructions = 0
 
     def __init__(self, trace_file, block_size, tag_size, associativity, index_size, offset_size, total_indices, replacement_policy):
         self.block_size = block_size
@@ -51,7 +52,7 @@ class Cache:
 
     def calculate_miss_rate(self):
         # cache miss/total lines = cache miss rate.
-        miss_rate = float(self.cache_miss_count/self.total_lines)
+        miss_rate = float(self.cache_miss_count/self.total_cycles)
         # 1 - miss rate = hit rate
         self.hit_rate = (1 - miss_rate) * 100
 
@@ -123,26 +124,24 @@ class Cache:
                 
                 cache_block = self.get_cache_block(address_space)
                 
-                cache_miss = False  # cache miss on valid == 0 or tag != block tag
-                self.total_lines += 1
-                if(cache_block.valid == 0):
-                    # set the valid bit if it's 0
+                # check for cache hit
+                # if the valid bit wasn't set or the tags don't match, cache miss
+                if(cache_block.valid == 0 or cache_block.tag != address_space['tag']):
+                    self.cache_miss_count += 1
+                    if cache_block.tag != address_space['tag']:
+                        print("Tag's don't match") # TEST remove
+                    if cache_block.valid == 0:
+                        print("Valid bit was 0") # TEST remove
+                    # Write to the block(s)
+                    # TODO write to multiple indexes if needed
+                    cache_block.tag = address_space['tag']
+                    # set the valid bit
                     cache_block.valid = 1
-                    cache_miss = True  # trigger cache miss
-                    self.cache_miss_count += 1
-                    # write to the block(s)
-                    # TODO write to multiple indexes if needed
-                    cache_block.tag = address_space['tag']
-                    print("Valid bit was 0")  # TEST remove
+                    number_of_reads = self.block_size/4
+                    self.total_cycles += 3 * number_of_reads
+                else: # cache hit
+                    self.total_cycles += 1
 
-                # If the valid bit was set and the tags don't match
-                if(cache_miss == False) and (cache_block.tag != address_space['tag']):
-                    cache_miss = True  # trigger cache miss
-                    self.cache_miss_count += 1
-                    # Write to the block(s) the new tag
-                    # TODO write to multiple indexes if needed
-                    cache_block.tag = address_space['tag']
-                    print("Tag's don't match")  # TEST remove
 
             # Read the second line
             else:
@@ -158,6 +157,11 @@ class Cache:
                 # If it is, ignore it.
                 # Otherwise increase the CPI count for this instruction by 2 for a read and 2 for a write
                 # print(rw_msg)
+                if (w_address is not 0) or (r_address is not 0):
+                    self.total_cycles += 2
+
+            self.total_cycles += 2
+            self.total_instructions += 1
 
         self.calculate_miss_rate()
 
@@ -168,8 +172,8 @@ class Cache:
         #               ", tag:" + str(column.tag) + ", time since last use value:" + str(column.timeSinceLastUse))
 
         print("Cache misses:" + str(self.cache_miss_count))
-        print("Lines read:" + str(self.total_lines))
+        print("Lines read:" + str(self.total_cycles))
         print("----- Results -----")
         # TODO: Add cache hit rate result
         print("Cache Hit Rate: " + "{:.2f}".format(self.hit_rate) + "%")
-        print("CPI: ")  # TODO: Add cache CPI result
+        print("CPI: " + str(self.total_cycles/self.total_instructions))
