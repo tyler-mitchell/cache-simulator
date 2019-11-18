@@ -1,5 +1,5 @@
 class Block:
-    def __init__(self, valid, tag, replace):
+    def __init__(self, valid, tag, timeSinceLastUse):
         self.tag = tag
         self.valid = valid
-        self.replace = replace
+        self.timeSinceLastUse = timeSinceLastUse

@@ -50,7 +50,7 @@ helpers.display_calculations(
 
 # simulate the cache
 cache = Cache(trace_file=trace_file, block_size=block_size, tag_size=tag_size, associativity=associativity,
-              index_size=index_size, offset_size=offset_size, total_indices=total_indices)
+              index_size=index_size, offset_size=offset_size, total_indices=total_indices, replacement_policy=replacement_policy)
 cache.simulate_cache()
 cache.display_cache()
 

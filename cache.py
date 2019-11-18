@@ -1,13 +1,15 @@
+from row import Row
 from block import Block
 
+import random
 
 class Cache:
-    cache_list = []
+    index_list = []
     cache_miss_count = 0
     hit_rate = 0
     total_lines = 0
 
-    def __init__(self, trace_file, block_size, tag_size, associativity, index_size, offset_size, total_indices):
+    def __init__(self, trace_file, block_size, tag_size, associativity, index_size, offset_size, total_indices, replacement_policy):
         self.block_size = block_size
         self.associativity = associativity
         self.trace_file = trace_file
@@ -21,11 +23,10 @@ class Cache:
 
     def build_cache(self):
         for row in range(self.indices):
-            # create a list of Block objects
-            cache_set = []
+            tag_set = Row(blocks=[], lastUsedIndex=0)
             for col in range(self.associativity):
-                cache_set.append(Block(valid=0, tag="0", replace=0))
-            self.cache_list.append(cache_set)  # add this "set" to the index
+                tag_set.blocks.append(Block(valid=0, tag="0", timeSinceLastUse=0))
+            self.index_list.append(tag_set)
 
     def calculate_address_space(self, address, tag_bits, index_bits, block_offset_bits):
         # convert hex string to binary string
@@ -53,16 +54,42 @@ class Cache:
         # 1 - miss rate = hit rate
         self.hit_rate = (1 - miss_rate) * 100
 
-    def get_cache_block(self, address_space, block):
-        block = self.cache_list[address_space['index']][block]
+    def get_cache_block(self, address_space):
+        row = self.index_list[address_space['index']][address_space['tag']]
+        block = None
+        if (self.replacement_policy == "RR"):
+            if (row.lastUsedIndex == -1 or row.lastUsedIndex + 1 == self.associativity):
+                block = row[0]
+                row.lastUsedIndex = 0
+            else:
+                block = row[row.lastUsedIndex + 1]
+                row.lastUsedIndex += 1
+        elif (self.replacement_policy == "RND"):
+            block = row[random.randint(0, associativity)]
+        elif (self.replacement_policy == "LRU"):
+            block = getLRUBlockIndex(row)
+            addOneTimeToAll(row)
+            block.timeSinceLastUse = 0
         return block
 
+    def getLRUBlockIndex(self, tag_set):
+        numLRU = 0
+        blockLRU = 0
+        for col in range(self.associativity):
+            if (tag_set.blocks[col].timeSinceLastUse > numLRU):
+                numLRU = tag_set.blocks[col].timeSinceLastUse
+                blockLRU = col
+        return blockLRU
+
+    def addOneTimeToAll(self, tag_set):
+        for col in range(self.associativity):
+            tag_set.blocks[col].timeSinceLastUse += 1
 
     def simulate_cache(self):
         tag_size = self.tag_size
         index_size = self.index_size
         trace_file = self.trace_file
-        cache_list = self.cache_list
+        index_list = self.index_list
         
         
         self.build_cache()
@@ -94,8 +121,7 @@ class Cache:
                 print("Index:" + str(address_space['index']))
                 print("Tag:" + address_space['tag'])
                 
-                block = 0  # TEST only choose the first block
-                cache_block = self.get_cache_block(address_space, block)
+                cache_block = self.get_cache_block(address_space)
                 
                 cache_miss = False  # cache miss on valid == 0 or tag != block tag
                 self.total_lines += 1
@@ -136,10 +162,10 @@ class Cache:
         self.calculate_miss_rate()
 
     def display_cache(self):
-        # for count, row in enumerate(self.cache_list):
+        # for count, row in enumerate(self.index_list):
         #     for column in row:
         #         print("Row #" + str(count) + ", valid bit:" + str(column.valid) +
-        #               ", tag:" + str(column.tag) + ", replace value:" + str(column.replace))
+        #               ", tag:" + str(column.tag) + ", time since last use value:" + str(column.timeSinceLastUse))
 
         print("Cache misses:" + str(self.cache_miss_count))
         print("Lines read:" + str(self.total_lines))
