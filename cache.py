@@ -74,7 +74,7 @@ class Cache:
 
     def getLRUBlock(self, tag_set):
         numLRU = 0
-        blockLRU = 0
+        blockLRU = tag_set.blocks[0]
         for col in range(self.associativity):
             if (tag_set.blocks[col].timeSinceLastUse > numLRU):
                 numLRU = tag_set.blocks[col].timeSinceLastUse
