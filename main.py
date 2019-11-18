@@ -23,6 +23,7 @@ helpers.check_arguments(args)
 cache_size = args.s
 block_size = args.b
 associativity = args.a
+
 replacement_policy = args.r
 file_name = args.f
 
@@ -39,6 +40,7 @@ index_size = int(math.log((total_blocks*1024 // associativity), 2))
 offset_size = math.log(block_size, 2)
 tag_size = int(32 - index_size - offset_size)
 total_indices = (2 ** index_size) // 1024
+indices = int(total_indices * 1024)
 memory_overhead = ((tag_size + 1) * associativity *
                    total_indices) // 8  # puts it in KB
 memory_impl = (memory_overhead * 1024) + (cache_size * 1024)
@@ -49,8 +51,8 @@ helpers.display_calculations(
 
 
 # simulate the cache
-cache = Cache(trace_file=trace_file, block_size=block_size, tag_size=tag_size, associativity=associativity,
-              index_size=index_size, offset_size=offset_size, total_indices=total_indices, replacement_policy=replacement_policy)
+cache = Cache(trace_file=trace_file, indices=indices, block_size=block_size, tag_size=tag_size, associativity=associativity,
+              index_size=index_size, offset_size=offset_size, replacement_policy=replacement_policy)
 cache.simulate_cache()
 cache.display_cache()
 
