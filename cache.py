@@ -23,12 +23,23 @@ class Cache:
     # Build the 2D array to represent the cache
     # Get the number of rows. Value is in K, convert with 1024
 
-    def build_cache(self):
+    """def build_cache(self):
         for row in range(self.indices):
             tag_set = Row(blocks=[], lastUsedIndex=-1)
             for col in range(self.associativity):
                 tag_set.blocks.append(Block(valid=0, tag="0", timeSinceLastUse=0))
             self.index_list.append(tag_set)
+    """
+    def build_cache(self):
+        #Each index has a "set" of blocks
+        for index in range(self.indices):
+            #create a list of Block objects
+            #This "block_list" represents the "set" in each index of the cache
+            block_list = []
+            for block in range(self.associativity):
+                block_list.append(Block(0,"0",0))#add a block to this row
+                print("==" + str(block_list)) #show that the block objects were made correctly
+            self.index_list.append(block_list)#add this "set" to the index
 
     def calculate_address_space(self, address, tag_bits, index_bits, block_offset_bits):
         # convert hex string to binary string
