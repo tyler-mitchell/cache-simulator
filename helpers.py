@@ -62,15 +62,14 @@ def display_input(args):
 def display_calculations(total_blocks, tag_size, index_size, total_indices, memory_overhead, memory_impl):
     # print out the calculations
     print("----- Calculated Values -----")
-    print("Total #Blocks: " + str(total_blocks) +
-          "KB (2^" + str(math.log(total_blocks, 2) + 10) + ")")
-    print("Tag Size: " + str(tag_size) + " bits")
-    print("Index size: " + str(index_size) +
-          "bits, Total Indices: " + str(total_indices) + "KB")
-    print("Overhead Memory Size: " + str(memory_overhead * 1024) +
-          " bytes (or " + str(memory_overhead) + "KB)")
-    print("Implementation Memory Size: " + str(memory_impl) +
-          " bytes (or " + str(memory_impl/1024) + " KB)")
+    print(
+        f"Total # Blocks: {total_blocks}KB (2^{int(math.log(total_blocks, 2) + 10)})")
+    print(f"Tag Size: {tag_size} bits")
+    print(f"Index size: {index_size} bits, Total Indices: {total_indices} KB")
+    print(
+        f"Overhead Memory Size: {memory_overhead * 1024} bytes (or {memory_overhead} KB)")
+    print(
+        f"Implementation Memory Size: {memory_impl} bytes (or {memory_impl/1024} KB )")
 
 
 def get_trace_file(file_name):

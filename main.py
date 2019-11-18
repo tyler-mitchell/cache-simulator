@@ -34,13 +34,13 @@ helpers.display_input(args)
 
 
 # calculate cache values
-total_blocks = ((cache_size * 1024) / block_size) / 1024
-index_size = int(math.log((total_blocks*1024 / associativity), 2))
+total_blocks = math.ceil(((cache_size * 1024) / block_size) / 1024)
+index_size = int(math.log((total_blocks*1024 // associativity), 2))
 offset_size = math.log(block_size, 2)
 tag_size = int(32 - index_size - offset_size)
-total_indices = (2 ** index_size) / 1024
+total_indices = (2 ** index_size) // 1024
 memory_overhead = ((tag_size + 1) * associativity *
-                   total_indices) / 8  # puts it in KB
+                   total_indices) // 8  # puts it in KB
 memory_impl = (memory_overhead * 1024) + (cache_size * 1024)
 
 # display calculations
