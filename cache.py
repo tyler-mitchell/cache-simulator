@@ -125,8 +125,8 @@ class Cache:
                 cache_block = self.get_cache_block(address_space)
                 
                 # check for cache hit
-                # if the valid bit wasn't set or the tags don't match, cache miss
-                if(cache_block.valid == 0 or cache_block.tag != address_space['tag']):
+                # if the valid bit wasn't set or the tags don't match
+                if(cache_block.valid == 0 or cache_block.tag != address_space['tag']): # cache miss
                     self.cache_miss_count += 1
                     if cache_block.tag != address_space['tag']:
                         print("Tag's don't match") # TEST remove
@@ -137,7 +137,7 @@ class Cache:
                     cache_block.tag = address_space['tag']
                     # set the valid bit
                     cache_block.valid = 1
-                    number_of_reads = self.block_size/4
+                    number_of_reads = self.block_size/4 # block size in bytes divided by 4-byte reads
                     self.total_cycles += 3 * number_of_reads
                 else: # cache hit
                     self.total_cycles += 1
