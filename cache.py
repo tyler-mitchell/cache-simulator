@@ -84,18 +84,18 @@ class Cache:
             block.timeSinceLastUse = 0
         return block
 
-    def getLRUBlock(self, tag_set):
+    def getLRUBlock(self, row):
         numLRU = 0
-        blockLRU = tag_set.blocks[0]
+        blockLRU = row.blocks[0]
         for col in range(self.associativity):
-            if (tag_set.blocks[col].timeSinceLastUse > numLRU):
-                numLRU = tag_set.blocks[col].timeSinceLastUse
-                blockLRU = tag_set.blocks[col]
+            if (row.blocks[col].timeSinceLastUse > numLRU):
+                numLRU = row.blocks[col].timeSinceLastUse
+                blockLRU = row.blocks[col]
         return blockLRU
 
-    def addOneTimeToAll(self, tag_set):
+    def addOneTimeToAll(self, row):
         for col in range(self.associativity):
-            tag_set.blocks[col].timeSinceLastUse += 1
+            row.blocks[col].timeSinceLastUse += 1
 
     def simulate_cache(self):
         tag_size = self.tag_size
