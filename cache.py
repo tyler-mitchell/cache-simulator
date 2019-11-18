@@ -23,7 +23,7 @@ class Cache:
 
     def build_cache(self):
         for row in range(self.indices):
-            tag_set = Row(blocks=[], lastUsedIndex=0)
+            tag_set = Row(blocks=[], lastUsedIndex=-1)
             for col in range(self.associativity):
                 tag_set.blocks.append(Block(valid=0, tag="0", timeSinceLastUse=0))
             self.index_list.append(tag_set)
