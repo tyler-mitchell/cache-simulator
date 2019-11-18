@@ -17,6 +17,7 @@ class Cache:
         self.index_size = index_size
         self.tag_size = tag_size
         self.offset_size = offset_size
+        self.replacement_policy = replacement_policy
 
     # Build the 2D array to represent the cache
     # Get the number of rows. Value is in K, convert with 1024
@@ -55,7 +56,7 @@ class Cache:
         self.hit_rate = (1 - miss_rate) * 100
 
     def get_cache_block(self, address_space):
-        row = self.index_list[address_space['index']][address_space['tag']]
+        row = self.index_list[address_space['index']]
         block = None
         if (self.replacement_policy == "RR"):
             if (row.lastUsedIndex == -1 or row.lastUsedIndex + 1 == self.associativity):
