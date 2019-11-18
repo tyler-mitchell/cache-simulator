@@ -59,13 +59,13 @@ class Cache:
         block = None
         if (self.replacement_policy == "RR"):
             if (row.lastUsedIndex == -1 or row.lastUsedIndex + 1 == self.associativity):
-                block = row[0]
+                block = row.blocks[0]
                 row.lastUsedIndex = 0
             else:
-                block = row[row.lastUsedIndex + 1]
+                block = row.blocks[row.lastUsedIndex + 1]
                 row.lastUsedIndex += 1
         elif (self.replacement_policy == "RND"):
-            block = row[random.randint(0, associativity)]
+            block = row.blocks[random.randint(0, associativity)]
         elif (self.replacement_policy == "LRU"):
             block = getLRUBlock(row)
             addOneTimeToAll(row)
