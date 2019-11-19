@@ -95,11 +95,14 @@ class Cache:
             for cache_block in index_list[current_index]:
                 if cache_block.tag == address_space['tag']:
                     cache_hit = True  # the block has been found!
+                    #increase CPI
+                    self.total_cycles += 1 #1 cycle for cache hit
 
             # NO MATCHING TAG FOUND, BEGIN REPLACEMENT
             if (cache_hit == False):
                 empty_block = False
                 self.cache_miss_count += 1  # This counts as a miss
+                self.total_cycles += (3 * int(block_size / 4))
                 # find an empty block to replace
                 for cache_block in index_list[address_space['index']]:
                     if (cache_block.valid == 0):
@@ -187,13 +190,13 @@ class Cache:
                     print("Write Address to be inserted: " + str(tokens[1]))
                     print(address_space)
                     self.insert_address(address_space, 4)
-                    #self.total_cycles += 2 #increase CPI
+                    self.total_cycles += 2 #increase CPI
                 if (int(r_address, 16) != 0):
                     address_space = self.calculate_address_space(str(tokens[4]), int(tag_size), int(index_size), int(self.offset_size))
                     print("Read Address to be inserted: " + str(tokens[4]))
                     print(address_space)
                     self.insert_address(address_space, 4)
-                    #self.total_cycles += 2 #Increase CPI
+                    self.total_cycles += 2 #Increase CPI
 
         self.calculate_hit_rate()
 
