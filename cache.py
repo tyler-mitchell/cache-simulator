@@ -127,13 +127,6 @@ class Cache:
                         # if no empty block was found, engage the replacement algorithm
                         if empty_block == False:
                             print("Execuing replacement algorithm")
-                            # TODO
-                            # Write a replacement algorithm that incorperates the 2D cache list we have
-                            # Round Robing could take a "next in line" approach. Essentially set the first blocks "next" value to true
-                            # When we run Round Robin replace the block where "next" is true.
-                            # Then set it's neighbor, the next block, to true for its next in line value
-                            # When you reach the last block(check the associativity and keep track of how many blocks were iterated)
-                            #  set the first Block to true
                             # rr
                             if(self.replacement_policy == "RR"):
                                 first_time = True
