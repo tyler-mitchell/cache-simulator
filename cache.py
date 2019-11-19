@@ -167,6 +167,9 @@ class Cache:
                     index_size), int(self.offset_size))  # all sizes are in bits
                 #put the address in the cache
                 self.insert_address(address_space, bytes_read)
+                #add to CPI
+                self.total_cycles += 2 #increase CPI
+                self.total_instructions += 1
 
                 
             # Read the second line
@@ -179,22 +182,18 @@ class Cache:
                     r_address) if int(r_address, 16) else "No data reads."
                 rw_msg = "%s %s" % (w_msg, r_msg)
                 #grab the write address if it's not 0
-                if (w_address != 0):
+                if (int(w_address, 16) != 0):
                     address_space = self.calculate_address_space(str(tokens[1]), int(tag_size), int(index_size), int(self.offset_size))
-                    print("Address to be inserted: ")
+                    print("Write Address to be inserted: " + str(tokens[1]))
                     print(address_space)
-                    #self.insert_address(address_space, 4)
-                
-                # TODO
-                # Check if the data in the src/dst is 0.
-                # If it is, ignore it.
-                # Otherwise increase the CPI count for this instruction by 2 for a read and 2 for a write
-                # print(rw_msg)
-                if (w_address != 0) or (r_address != 0):
-                    self.total_cycles += 2
-
-            self.total_cycles += 2
-            self.total_instructions += 1
+                    self.insert_address(address_space, 4)
+                    #self.total_cycles += 2 #increase CPI
+                if (int(r_address, 16) != 0):
+                    address_space = self.calculate_address_space(str(tokens[4]), int(tag_size), int(index_size), int(self.offset_size))
+                    print("Read Address to be inserted: " + str(tokens[4]))
+                    print(address_space)
+                    self.insert_address(address_space, 4)
+                    #self.total_cycles += 2 #Increase CPI
 
         self.calculate_hit_rate()
 
