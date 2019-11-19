@@ -86,6 +86,10 @@ class Cache:
                 # get the tag, the index and the block offset
                 address_space = self.calculate_address_space(hex_address, int(tag_size), int(
                     index_size), int(self.offset_size))  # all sizes are in bits
+                #new function to insert addresses
+                #self.insert_address(self,address_space)
+
+                #======================================================================================
                 cache_hit = False
 
                 print("Data to be inserted into cache block")
@@ -94,8 +98,7 @@ class Cache:
 
                 # HANDLING ROLLOVER INTO OTHER ROWS                # get the number of rows to be read
                 offset = address_space['block_offset']  # get the offset
-                index_rollover = int(
-                    (int(offset) + bytes_read) / block_size)
+                index_rollover = int((int(offset) + bytes_read) / block_size)
                 if((int(offset) + bytes_read % block_size) != 0):  # if there is a remainder
                     index_rollover += 1  # add a row to be read
 
@@ -164,7 +167,7 @@ class Cache:
                                 print("Random number chosen: " + str(random_num))
                                 index_list[current_index][random_num].tag = address_space['tag']
                                 print("Block " + str(random_num) + " replaced with " + address_space['tag'])
-
+            #=======================================================================================================================
             # Read the second line
             else:
                 w_address = hex(int(tokens[1], 16))
