@@ -67,9 +67,9 @@ class Cache:
         index_list = self.index_list
         block_size = self.block_size
         cache_hit = False
-        print("Data to be inserted into cache block")
-        print("Index:" + str(address_space['index']))
-        print("Tag:" + address_space['tag'])
+        #print("Data to be inserted into cache block")
+        #print("Index:" + str(address_space['index']))
+        #print("Tag:" + address_space['tag'])
 
         # HANDLING ROLLOVER INTO OTHER ROWS                # get the number of rows to be read
         offset = address_space['block_offset']  # get the offset
@@ -86,7 +86,7 @@ class Cache:
                 #go to the first index
                 current_index = current_index - self.indices
             #print("rows in the cache: " + str(self.indices))
-            print("Rollover: " + str(rollover))
+            #print("Rollover: " + str(rollover))
             #print("Base Index: " + str(address_space['index']))
             #print("current index: " + str(current_index))
 
@@ -114,7 +114,6 @@ class Cache:
 
                 # if no empty block was found, engage the replacement algorithm
                 if empty_block == False:
-                    print("Executing replacement algorithm")
                     # rr
                     if(self.replacement_policy == "RR"):
                         first_time = True
@@ -143,7 +142,6 @@ class Cache:
                         #get a random number in the range of 0 to our associativity.
                         random_num = random.randrange(0,self.associativity)
                         index_list[current_index][random_num].tag = address_space['tag']
-                        print("Block " + str(random_num) + " replaced with " + address_space['tag'])
 
     def simulate_cache(self):
         tag_size = self.tag_size
@@ -187,14 +185,14 @@ class Cache:
                 #grab the write address if it's not 0
                 if (int(w_address, 16) != 0):
                     address_space = self.calculate_address_space(str(tokens[1]), int(tag_size), int(index_size), int(self.offset_size))
-                    print("Write Address to be inserted: " + str(tokens[1]))
-                    print(address_space)
+                    #print("Write Address to be inserted: " + str(tokens[1]))
+                    #print(address_space)
                     self.insert_address(address_space, 4)
                     self.total_cycles += 2 #increase CPI
                 if (int(r_address, 16) != 0):
                     address_space = self.calculate_address_space(str(tokens[4]), int(tag_size), int(index_size), int(self.offset_size))
-                    print("Read Address to be inserted: " + str(tokens[4]))
-                    print(address_space)
+                    #print("Read Address to be inserted: " + str(tokens[4]))
+                    #print(address_space)
                     self.insert_address(address_space, 4)
                     self.total_cycles += 2 #Increase CPI
 
@@ -206,8 +204,8 @@ class Cache:
         #        print("Row #" + str(count) + ", valid bit:" + str(column.valid) + 
         #            ", tag:" + str(column.tag))
 
-        print("Cache misses:" + str(self.cache_miss_count))
-        print("Lines read:" + str(self.total_cycles))
+        #print("Cache misses:" + str(self.cache_miss_count))
+        #print("Lines read:" + str(self.total_cycles))
         print("----- Results -----")
         # TODO: Add cache hit rate result
         print("Cache Hit Rate: " + "{:.2f}".format(self.hit_rate) + "%")

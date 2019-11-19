@@ -5,13 +5,7 @@ import argparse
 import helpers
 from block import Block
 from cache import Cache
-'''
-Cache Capacity = (Block Size in Bytes) * (Blocks per Set) * (Number of Sets)
-Index Bits = LOG2(Blocks per Set)
-Block Offset Bits = LOG2(Block Size in Bytes)
-Tag Bits = (Address Bits) - (Index Bits) - (Block Offset Bits)
-Sets = Cache Size / (Block Size * Associativity)
-'''
+
 
 # parse arguments
 args = helpers.parse_arguments()
