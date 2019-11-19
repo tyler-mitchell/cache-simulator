@@ -1,4 +1,3 @@
-from row import Row
 from block import Block
 
 import random
@@ -104,6 +103,10 @@ class Cache:
                 for rollover in range(0, index_rollover):
                     # get the correct row to check
                     current_index = rollover + address_space['index']
+                    print("rows in the cache: " + str(self.indices))
+                    print("Rollover: " + str(rollover))
+                    print("Base Index: " + str(address_space['index']))
+                    print("curren index: " + str(current_index))
 
                     # Given the tag and index, try to find the block that matches this tag in the set at this index
                     # check this row's blocks for a match
@@ -166,7 +169,7 @@ class Cache:
                 # If it is, ignore it.
                 # Otherwise increase the CPI count for this instruction by 2 for a read and 2 for a write
                 # print(rw_msg)
-                if (w_address is not 0) or (r_address is not 0):
+                if (w_address != 0) or (r_address != 0):
                     self.total_cycles += 2
 
             self.total_cycles += 2
