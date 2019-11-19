@@ -88,7 +88,7 @@ class Cache:
                     index_size), int(self.offset_size))  # all sizes are in bits
                 cache_hit = False
 
-                print("Data inserted into cache block")
+                print("Data to be inserted into cache block")
                 print("Index:" + str(address_space['index']))
                 print("Tag:" + address_space['tag'])
 
@@ -103,10 +103,14 @@ class Cache:
                 for rollover in range(0, index_rollover):
                     # get the correct row to check
                     current_index = rollover + address_space['index']
-                    print("rows in the cache: " + str(self.indices))
+                    #This handles going beyond the cache index for a rollover
+                    if (current_index + 1) >= self.indices:
+                        #go to the first index
+                        current_index = current_index - self.indices
+                    #print("rows in the cache: " + str(self.indices))
                     print("Rollover: " + str(rollover))
-                    print("Base Index: " + str(address_space['index']))
-                    print("curren index: " + str(current_index))
+                    #print("Base Index: " + str(address_space['index']))
+                    #print("current index: " + str(current_index))
 
                     # Given the tag and index, try to find the block that matches this tag in the set at this index
                     # check this row's blocks for a match
@@ -122,20 +126,19 @@ class Cache:
                         for cache_block in index_list[address_space['index']]:
                             if (cache_block.valid == 0):
                                 # empty block found, fill in the tag
-                                print("Empty block found")
+                                #print("Empty block found")
                                 cache_block.valid = 1  # the block now has a tag
                                 empty_block = True  # No need for replacement algorithm if empty block was found
                                 break  # exit the loop and get out of this set
 
                         # if no empty block was found, engage the replacement algorithm
                         if empty_block == False:
-                            print("Execuing replacement algorithm")
+                            print("Executing replacement algorithm")
                             # rr
                             if(self.replacement_policy == "RR"):
                                 first_time = True
                                 count = 0
                                 for cache_block in index_list[current_index]:
-                                    count += 1
                                     if cache_block.next == True:
                                         # replace
                                         cache_block.tag = address_space['tag']
@@ -143,17 +146,24 @@ class Cache:
                                         first_time = False
                                         # update next block
                                         # if not the last block, update the next one
-                                        if count < self.associativity:
-                                            index_list[current_index][(
-                                                count + 1)].next = True
+                                        if (count + 1) < self.associativity:#check that the next block isn't out of range(remember 0 indexing)
+                                            index_list[current_index][(count + 1)].next = True
                                         else:
                                             index_list[current_index][0].next = True
+                                    count += 1
+
                                 if(first_time == True):
                                     # set first block to next
                                     index_list[current_index][0].next = True
-
-                            # For the Random algorithm just pick a block index at random. Literally get a value and go to
-                            # index_list[address_space['index']][RANDOM NUMBER GOES HERE].tag = new tag
+                            elif(self.replacement_policy == "RND"):
+                                # For the Random algorithm just pick a block index at random. Literally get a value and go to
+                                # index_list[address_space['index']][RANDOM NUMBER GOES HERE].tag = new tag
+                                #Assuming no blocks are empty, which is how we got to this point
+                                #get a random number in the range of 0 to our associativity.
+                                random_num = random.randrange(0,self.associativity)
+                                print("Random number chosen: " + str(random_num))
+                                index_list[current_index][random_num].tag = address_space['tag']
+                                print("Block " + str(random_num) + " replaced with " + address_space['tag'])
 
             # Read the second line
             else:
