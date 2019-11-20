@@ -1,0 +1,90 @@
+Cache Simulator CS 3853 Spring 2019 - Group # 9
+Cmd Line: ['main.py', '-f', 'trace-files/A-9_new_1.5.pdf.trc', '-s', '8', '-b', '4', '-a', '1', '-r', 'RR']
+Trace File: trace-files/A-9_new_1.5.pdf.trc
+Cache Size: 8 KB
+Block Size: 4 bytes
+Associativity: 1
+R-Policy: RR
+----- Calculated Values -----
+Total # Blocks: 2.0KB (2^11)
+Tag Size: 19 bits
+Index size: 11 bits, Total Indices: 2.0 KB
+Overhead Memory Size: 5120.0 bytes (or 5.0 KB)
+Implementation Memory Size: 13312.0 bytes (or 13.0 KB )
+----- Results -----
+Cache Hit Rate: 93.21%
+CPI: 5.264618434093162
+
+
+Cache Simulator CS 3853 Spring 2019 - Group # 9
+Cmd Line: ['main.py', '-f', 'trace-files/A-9_new_1.5.pdf.trc', '-s', '64', '-b', '8', '-a', '2', '-r', 'RND']
+Trace File: trace-files/A-9_new_1.5.pdf.trc
+Cache Size: 64 KB
+Block Size: 8 bytes
+Associativity: 2
+R-Policy: RND
+----- Calculated Values -----
+Total # Blocks: 8.0KB (2^13)
+Tag Size: 17 bits
+Index size: 12 bits, Total Indices: 4.0 KB
+Overhead Memory Size: 18432.0 bytes (or 18.0 KB)
+Implementation Memory Size: 83968.0 bytes (or 82.0 KB )
+----- Results -----
+Cache Hit Rate: 97.44%
+CPI: 5.168625778843125
+
+
+
+Cache Simulator CS 3853 Spring 2019 - Group # 9
+Cmd Line: ['main.py', '-f', 'trace-files/A-9_new_1.5.pdf.trc', '-s', '256', '-b', '16', '-a', '4', '-r', 'RR']
+Trace File: trace-files/A-9_new_1.5.pdf.trc
+Cache Size: 256 KB
+Block Size: 16 bytes
+Associativity: 4
+R-Policy: RR
+----- Calculated Values -----
+Total # Blocks: 16.0KB (2^14)
+Tag Size: 16 bits
+Index size: 12 bits, Total Indices: 4.0 KB
+Overhead Memory Size: 34816.0 bytes (or 34.0 KB)
+Implementation Memory Size: 296960.0 bytes (or 290.0 KB )
+----- Results -----
+Cache Hit Rate: 98.64%
+CPI: 10.141455581933144
+
+
+Cache Simulator CS 3853 Spring 2019 - Group # 9
+Cmd Line: ['main.py', '-f', 'trace-files/A-9_new_1.5.pdf.trc', '-s', '1024', '-b', '32', '-a', '8', '-r', 'RR']
+Trace File: trace-files/A-9_new_1.5.pdf.trc
+Cache Size: 1024 KB
+Block Size: 32 bytes
+Associativity: 8
+R-Policy: RR
+----- Calculated Values -----
+Total # Blocks: 32.0KB (2^15)
+Tag Size: 15 bits
+Index size: 12 bits, Total Indices: 4.0 KB
+Overhead Memory Size: 65536.0 bytes (or 64.0 KB)
+Implementation Memory Size: 1114112.0 bytes (or 1088.0 KB )
+----- Results -----
+Cache Hit Rate: 99.14%
+CPI: 16.84945567412666
+
+
+
+Cache Simulator CS 3853 Spring 2019 - Group # 9
+Cmd Line: ['main.py', '-f', 'trace-files/A-9_new_1.5.pdf.trc', '-s', '8', '-b', '64', '-a', '4', '-r', 'RR']
+Trace File: trace-files/A-9_new_1.5.pdf.trc
+Cache Size: 8 KB
+Block Size: 64 bytes
+Associativity: 4
+R-Policy: RR
+----- Calculated Values -----
+Total # Blocks: 0.125KB (2^7)
+Tag Size: 21 bits
+Index size: 5 bits, Total Indices: 0.03125 KB
+Overhead Memory Size: 352.0 bytes (or 0.34375 KB)
+Implementation Memory Size: 8544.0 bytes (or 8.34375 KB )
+----- Results -----
+Cache Hit Rate: 98.85%
+CPI: 16.76887854272785
