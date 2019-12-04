@@ -24,7 +24,7 @@ associativities = [ 2 ] # not specified in instructions
 replacementPolicies = [ "RR", "RND" ]
 
 # start CSV file and add header row
-csvFile = open(csvFileName, "w")
+csvFile = open(csvFileName, "w", newline='')
 csvFile.write("Trace File Name, " \
     + "Cache Size (KB), " \
     + "Block Size (bytes), " \
@@ -38,7 +38,7 @@ csvFile.write("Trace File Name, " \
     + "Overhead Memory Size (KB), " \
     + "Implementation Memory Size (KB), " 
     + "Cache Hit Rate %, " \
-    + "CPI\n")
+    + "CPI")
 csvFile.flush()
 
 print("Running simulations...")
@@ -76,7 +76,7 @@ for fileName in traceFileNames:
                     CPI = output[16-1].split(" ")[2-1] # number
 
                     # write simulation arguments and results to CSV
-                    csvFile.write("\"%s\", %d, %d, %d, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s" % (
+                    csvFile.write("\n\"%s\", %d, %d, %d, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s" % (
                         fileName,
                         cacheSize,
                         blockSize,
