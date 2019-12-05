@@ -18,10 +18,10 @@ traceFileNames = [  "TinyTrace.trc",
                     "Trace1A.trc", 
                     "Trace2A.trc", 
                     "A-9_new 1.5.pdf.trc" ]
-cacheSizes = [ 8, 64, 256, 1024 ]
+cacheSizes = [ 8, 16, 64, 256 ]
 blockSizes = [ 4, 16, 64 ]
-associativities = [ 2 ] # not specified in instructions
-replacementPolicies = [ "RR", "RND" ]
+associativities = [ 1, 2, 4, 8 ] # not specified in instructions
+replacementPolicies = [ "RR", "RND", "LRU" ]
 
 # start CSV file and add header row
 csvFile = open(csvFileName, "w", newline='')
